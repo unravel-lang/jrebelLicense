@@ -4031,5 +4031,5 @@
     "queryAllDeclaredMethods":true,
     "methods":[{"name": "getName", "parameterTypes":[]},{"name": "getNameIndex", "parameterTypes":[]},{"name":"getAddress","parameterTypes":[] }, {"name":"getLocalPort","parameterTypes":[] }, {"name":"setPort","parameterTypes":["int"] }, {"name":"setProperty","parameterTypes":["java.lang.String","java.lang.String"] }]
   }
-]
+
 ]
