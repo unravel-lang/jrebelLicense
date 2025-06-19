@@ -4024,5 +4024,12 @@
 {
   "name":"sun.security.x509.SubjectKeyIdentifierExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-}
+},
+  {
+    "name":"org.apache.coyote.AbstractProtocol",
+    "queryAllPublicMethods":true,
+    "queryAllDeclaredMethods":true,
+    "methods":[{"name": "getName", "parameterTypes":[]},{"name": "getNameIndex", "parameterTypes":[]},{"name":"getAddress","parameterTypes":[] }, {"name":"getLocalPort","parameterTypes":[] }, {"name":"setPort","parameterTypes":["int"] }, {"name":"setProperty","parameterTypes":["java.lang.String","java.lang.String"] }]
+  }
+]
 ]
