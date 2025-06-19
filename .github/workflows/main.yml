@@ -8,6 +8,15 @@ on:
     branches:
       - main
   workflow_dispatch: # 允许手动触发工作流
+    inputs:
+      environment:
+        description: '部署环境'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
 
 jobs:
   build-arm64-native-image:
