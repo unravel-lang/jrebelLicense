@@ -85,7 +85,137 @@ class CustomersHttpController {
     @RequestMapping("/jrebel/leases")
     void jrebelLeasesHandler(HttpServletResponse response, HttpServletRequest request)
             throws IOException {
+        logRequest(request);
         jrebelLeasesHandler0(response, request);
+    }
+
+
+
+    @RequestMapping("/jrebel/leases/1")
+    void jrebelLeases1Handler(HttpServletResponse response, HttpServletRequest request)
+            throws IOException {
+        logRequest(request);
+        jrebelLeasesHandler1(response, request);
+    }
+
+
+
+
+
+    @RequestMapping("/agent/leases")
+    void agentLeasesHandler(HttpServletResponse response, HttpServletRequest request)
+            throws IOException {
+        logRequest(request);
+        jrebelLeasesHandler0(response, request);
+    }
+
+    @RequestMapping("/agent/leases/1")
+    void agentLeases1Handler(HttpServletResponse response, HttpServletRequest request)
+            throws IOException {
+        logRequest(request);
+        jrebelLeasesHandler1(response, request);
+    }
+
+
+    @RequestMapping("jrebel/validate-connection")
+    void jrebelValidateHandler(HttpServletResponse response, HttpServletRequest request)
+            throws IOException {
+        logRequest(request);
+        response.setContentType("application/json; charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        String jsonStr =
+                """
+                    {
+                        "serverVersion": "3.2.4",
+                        "serverProtocolVersion": "1.1",
+                        "serverGuid": "a1b4aea8-b031-4302-b602-670a990272cb",
+                        "groupType": "managed",
+                        "statusCode": "SUCCESS",
+                        "company": "Administrator",
+                        "canGetLease": true,
+                        "licenseType": 1,
+                        "evaluationLicense": false,
+                        "seatPoolType": "standalone"
+                    }
+                    """;
+        JSONObject jsonObject = JSON.parseObject(jsonStr);
+        String body = jsonObject.toString();
+        response.getWriter().print(body);
+    }
+
+    @RequestMapping("/rpc/ping.action")
+    void pingHandler(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        logRequest(request);
+        response.setContentType("text/html; charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        String salt = request.getParameter("salt");
+        if (salt == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            String xmlContent =
+                    "<PingResponse><message></message><responseCode>OK</responseCode><salt>"
+                            + salt
+                            + "</salt></PingResponse>";
+            String xmlSignature = rsasign.Sign(xmlContent);
+            String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
+            response.getWriter().print(body);
+        }
+    }
+
+    @RequestMapping("/rpc/obtainTicket.action")
+    void obtainTicketHandler(HttpServletResponse response, HttpServletRequest request)
+            throws IOException {
+        logRequest(request);
+        response.setContentType("text/html; charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        // response.setHeader("Date", date);
+        // response.setHeader("Server", "fasthttp");
+        String salt = request.getParameter("salt");
+        String username = request.getParameter("userName");
+        String prolongationPeriod = "607875500";
+        if (salt == null || username == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            String xmlContent =
+                    "<ObtainTicketResponse><message></message><prolongationPeriod>"
+                            + prolongationPeriod
+                            + "</prolongationPeriod><responseCode>OK</responseCode><salt>"
+                            + salt
+                            + "</salt><ticketId>1</ticketId><ticketProperties>licensee="
+                            + username
+                            + "\tlicenseType=0\t</ticketProperties></ObtainTicketResponse>";
+            String xmlSignature = rsasign.Sign(xmlContent);
+            String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
+            response.getWriter().print(body);
+        }
+    }
+
+    @RequestMapping("/rpc/releaseTicket.action")
+    void releaseTicketHandler(HttpServletResponse response, HttpServletRequest request)
+            throws IOException {
+        logRequest(request);
+        response.setContentType("text/html; charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        String salt = request.getParameter("salt");
+        if (salt == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            String xmlContent =
+                    "<ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>"
+                            + salt
+                            + "</salt></ReleaseTicketResponse>";
+            String xmlSignature = rsasign.Sign(xmlContent);
+            String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
+            response.getWriter().print(body);
+        }
+    }
+
+
+    private static void logRequest(HttpServletRequest request) {
+        log.info(
+                "uri:【{}】,params:【{}】",
+                request.getRequestURI(),
+                JSONObject.toJSONString(request.getParameterMap()));
     }
 
     void jrebelLeasesHandler0(HttpServletResponse response, HttpServletRequest request)
@@ -107,7 +237,6 @@ class CustomersHttpController {
             validFrom = clientTime;
             validUntil = String.valueOf(clinetTimeUntil);
         }
-        log.info(JSON.toJSONString(request.getParameterMap()));
         String jsonStr =
                 """
                     {
@@ -149,136 +278,27 @@ class CustomersHttpController {
         }
     }
 
-    @RequestMapping("/jrebel/leases/1")
-    void jrebelLeases1Handler(HttpServletResponse response, HttpServletRequest request)
-            throws IOException {
-        jrebelLeasesHandler0(response, request);
-    }
 
-    void jrebelLeases1Handler0(HttpServletResponse response, HttpServletRequest request)
-            throws IOException {
+    private static void jrebelLeasesHandler1(HttpServletResponse response, HttpServletRequest request) throws IOException {
         response.setContentType("application/json; charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
         String username = request.getParameter("username");
         String jsonStr =
-                """
-                    {
-                        "serverVersion": "3.2.4",
-                        "serverProtocolVersion": "1.1",
-                        "serverGuid": "a1b4aea8-b031-4302-b602-670a990272cb",
-                        "groupType": "managed",
-                        "statusCode": "SUCCESS",
-                        "msg": null,
-                        "statusMessage": null
-                    }
-                    """;
-        JSONObject jsonObject = JSON.parseObject(jsonStr);
+                "{\n"
+                        + "    \"serverVersion\": \"3.2.4\",\n"
+                        + "    \"serverProtocolVersion\": \"1.1\",\n"
+                        + "    \"serverGuid\": \"a1b4aea8-b031-4302-b602-670a990272cb\",\n"
+                        + "    \"groupType\": \"managed\",\n"
+                        + "    \"statusCode\": \"SUCCESS\",\n"
+                        + "    \"msg\": null,\n"
+                        + "    \"statusMessage\": null\n"
+                        + "}\n";
+        JSONObject jsonObject = JSONObject.parseObject(jsonStr);
         if (username != null) {
             jsonObject.put("company", username);
         }
         String body = jsonObject.toString();
         response.getWriter().print(body);
-    }
-
-    @RequestMapping("/agent/leases")
-    void agentLeasesHandler(HttpServletResponse response, HttpServletRequest request)
-            throws IOException {
-        jrebelLeasesHandler0(response, request);
-    }
-
-    @RequestMapping("/agent/leases/1")
-    void agentLeases1Handler(HttpServletResponse response, HttpServletRequest request)
-            throws IOException {
-        jrebelLeases1Handler0(response, request);
-    }
-
-    @RequestMapping("jrebel/validate-connection")
-    void jrebelValidateHandler(HttpServletResponse response, HttpServletRequest request)
-            throws IOException {
-        response.setContentType("application/json; charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        String jsonStr =
-                """
-                    {
-                        "serverVersion": "3.2.4",
-                        "serverProtocolVersion": "1.1",
-                        "serverGuid": "a1b4aea8-b031-4302-b602-670a990272cb",
-                        "groupType": "managed",
-                        "statusCode": "SUCCESS",
-                        "company": "Administrator",
-                        "canGetLease": true,
-                        "licenseType": 1,
-                        "evaluationLicense": false,
-                        "seatPoolType": "standalone"
-                    }
-                    """;
-        JSONObject jsonObject = JSON.parseObject(jsonStr);
-        String body = jsonObject.toString();
-        response.getWriter().print(body);
-    }
-
-    @RequestMapping("/rpc/ping.action")
-    void pingHandler(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        response.setContentType("text/html; charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        String salt = request.getParameter("salt");
-        if (salt == null) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        } else {
-            String xmlContent =
-                    "<PingResponse><message></message><responseCode>OK</responseCode><salt>"
-                            + salt
-                            + "</salt></PingResponse>";
-            String xmlSignature = rsasign.Sign(xmlContent);
-            String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
-            response.getWriter().print(body);
-        }
-    }
-
-    @RequestMapping("/rpc/obtainTicket.action")
-    void obtainTicketHandler(HttpServletResponse response, HttpServletRequest request)
-            throws IOException {
-        response.setContentType("text/html; charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        // response.setHeader("Date", date);
-        // response.setHeader("Server", "fasthttp");
-        String salt = request.getParameter("salt");
-        String username = request.getParameter("userName");
-        String prolongationPeriod = "607875500";
-        if (salt == null || username == null) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        } else {
-            String xmlContent =
-                    "<ObtainTicketResponse><message></message><prolongationPeriod>"
-                            + prolongationPeriod
-                            + "</prolongationPeriod><responseCode>OK</responseCode><salt>"
-                            + salt
-                            + "</salt><ticketId>1</ticketId><ticketProperties>licensee="
-                            + username
-                            + "\tlicenseType=0\t</ticketProperties></ObtainTicketResponse>";
-            String xmlSignature = rsasign.Sign(xmlContent);
-            String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
-            response.getWriter().print(body);
-        }
-    }
-
-    @RequestMapping("/rpc/releaseTicket.action")
-    void releaseTicketHandler(HttpServletResponse response, HttpServletRequest request)
-            throws IOException {
-        response.setContentType("text/html; charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        String salt = request.getParameter("salt");
-        if (salt == null) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        } else {
-            String xmlContent =
-                    "<ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>"
-                            + salt
-                            + "</salt></ReleaseTicketResponse>";
-            String xmlSignature = rsasign.Sign(xmlContent);
-            String body = "<!-- " + xmlSignature + " -->\n" + xmlContent;
-            response.getWriter().print(body);
-        }
     }
 
     record Customer(Integer id, String name) {}
