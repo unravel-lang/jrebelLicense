@@ -1,2 +1,2 @@
 # spring-graalvm-demo
-a springboot graalvm-demo
+a jrebelLicense written by springboot graalvm-demo
