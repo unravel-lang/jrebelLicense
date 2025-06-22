@@ -136,6 +136,13 @@
           "parameterTypes": []
         },
         {
+          "name": "jrebelLeases1Handler",
+          "parameterTypes": [
+            "jakarta.servlet.http.HttpServletResponse",
+            "jakarta.servlet.http.HttpServletRequest"
+          ]
+        },
+        {
           "name": "jrebelLeasesHandler",
           "parameterTypes": [
             "jakarta.servlet.http.HttpServletResponse",
@@ -303,6 +310,9 @@
     },
     {
       "type": "com.sun.management.internal.OperatingSystemImpl"
+    },
+    {
+      "type": "com.sun.management.internal.VirtualThreadSchedulerImpls$VirtualThreadSchedulerImpl"
     },
     {
       "type": "com.unboundid.ldap.listener.InMemoryDirectoryServer"
@@ -514,6 +524,12 @@
       ]
     },
     {
+      "type": "java.lang.Cloneable"
+    },
+    {
+      "type": "java.lang.Comparable"
+    },
+    {
       "type": "java.lang.Deprecated"
     },
     {
@@ -582,11 +598,6 @@
     },
     {
       "type": "java.lang.Thread",
-      "fields": [
-        {
-          "name": "threadLocalRandomProbe"
-        }
-      ],
       "methods": [
         {
           "name": "ofVirtual",
@@ -655,17 +666,6 @@
     },
     {
       "type": "java.lang.management.LockInfo"
-    },
-    {
-      "type": "java.lang.management.ManagementPermission",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        }
-      ]
     },
     {
       "type": "java.lang.management.MemoryMXBean"
@@ -802,7 +802,8 @@
       "type": "java.util.ArrayList"
     },
     {
-      "type": "java.util.Date"
+      "type": "java.util.Date",
+      "allDeclaredFields": true
     },
     {
       "type": "java.util.Deque"
@@ -815,18 +816,6 @@
     },
     {
       "type": "java.util.List"
-    },
-    {
-      "type": "java.util.PropertyPermission",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String",
-            "java.lang.String"
-          ]
-        }
-      ]
     },
     {
       "type": "java.util.SequencedCollection"
@@ -844,37 +833,7 @@
       "type": "java.util.concurrent.Executor"
     },
     {
-      "type": "java.util.concurrent.ForkJoinTask",
-      "fields": [
-        {
-          "name": "aux"
-        },
-        {
-          "name": "status"
-        }
-      ]
-    },
-    {
       "type": "java.util.concurrent.Future"
-    },
-    {
-      "type": "java.util.concurrent.atomic.AtomicBoolean",
-      "fields": [
-        {
-          "name": "value"
-        }
-      ]
-    },
-    {
-      "type": "java.util.concurrent.atomic.Striped64",
-      "fields": [
-        {
-          "name": "base"
-        },
-        {
-          "name": "cellsBusy"
-        }
-      ]
     },
     {
       "type": "java.util.logging.LogManager",
@@ -1050,6 +1009,9 @@
     },
     {
       "type": "jdk.internal.misc.Unsafe"
+    },
+    {
+      "type": "jdk.management.VirtualThreadSchedulerMXBean"
     },
     {
       "type": "jdk.management.jfr.ConfigurationInfo"
@@ -3709,7 +3671,15 @@
     },
     {
       "type": "org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController",
-      "allDeclaredFields": true
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "error",
+          "parameterTypes": [
+            "jakarta.servlet.http.HttpServletRequest"
+          ]
+        }
+      ]
     },
     {
       "type": "org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver",
@@ -5620,6 +5590,9 @@
       "glob": "META-INF/build-info.properties"
     },
     {
+      "glob": "META-INF/resources/agent/features"
+    },
+    {
       "glob": "META-INF/resources/index.html"
     },
     {
@@ -5704,7 +5677,7 @@
       "glob": "banner.txt"
     },
     {
-      "glob": "com/example/demo/"
+      "glob": "com/example/demo"
     },
     {
       "glob": "com/example/demo/controller/CustomersHttpController$Customer.class"
@@ -6721,7 +6694,13 @@
       "glob": "org/springframework/web/servlet/config/annotation/WebMvcConfigurer.class"
     },
     {
+      "glob": "public/agent/features"
+    },
+    {
       "glob": "public/index.html"
+    },
+    {
+      "glob": "resources/agent/features"
     },
     {
       "glob": "resources/index.html"
@@ -6730,11 +6709,14 @@
       "glob": "spring.properties"
     },
     {
+      "glob": "static/agent/features"
+    },
+    {
       "glob": "static/index.html"
     },
     {
       "module": "java.base",
-      "glob": "jdk/internal/icu/impl/data/icudt74b/nfkc.nrm"
+      "glob": "jdk/internal/icu/impl/data/icudt76b/nfkc.nrm"
     },
     {
       "module": "jdk.jfr",
@@ -7051,9 +7033,6 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "java.lang.String",
-            "java.lang.String",
-            "java.lang.String",
             "java.lang.String",
             "java.lang.String",
             "java.lang.String",

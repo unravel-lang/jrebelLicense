@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -212,10 +214,17 @@ class CustomersHttpController {
 
 
     private static void logRequest(HttpServletRequest request) {
+        Enumeration<String> parameterNames = request.getParameterNames();
+        JSONObject paramMap = new JSONObject();
+        while (parameterNames.hasMoreElements()) {
+            String parameterName = parameterNames.nextElement();
+            paramMap.put(parameterName, request.getParameter(parameterName));
+        }
+        String urlParam = paramMap.entrySet().stream().map(x -> x.getKey() + "=" + x.getValue()).collect(Collectors.joining("&"));
         log.info(
                 "uri:【{}】,params:【{}】",
                 request.getRequestURI(),
-                JSONObject.toJSONString(request.getParameterMap()));
+                urlParam);
     }
 
     void jrebelLeasesHandler0(HttpServletResponse response, HttpServletRequest request)

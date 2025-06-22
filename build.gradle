@@ -17,12 +17,31 @@ graalvmNative {
         version = '0.3.15'
     }
 
+    agent {
+        defaultMode = "standard"
+        enabled = true
+
+        modes {
+            standard {
+            }
+            conditional {
+                userCodeFilterPath = "path-to-filter.json"
+                extraFilterPath = "path-to-another-filter.json" // Optional
+            }
+            direct {
+                options.add("config-merge-dir=target/native-config/")
+                options.add("experimental-configuration-with-origins")
+            }
+        }
+    }
+
     binaries {
         main {
 //            jvmArgs.add("-Xmx4g")
 
             buildArgs.add('--enable-all-security-services')
-            buildArgs.add('-Ob')
+            buildArgs.add('-O3')
+//            buildArgs.add('-march=native')
 //            buildArgs.add('-H:ConfigurationFileDirectories=./target/native-config')
 //            buildArgs.add('-H:ReflectionConfigurationFiles=reflect-config.json')
 //            buildArgs.add('--emit build-report')
@@ -32,6 +51,9 @@ graalvmNative {
 
     }
 }
+
+
+
 
 java {
 }

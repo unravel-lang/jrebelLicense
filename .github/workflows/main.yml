@@ -29,8 +29,8 @@ jobs:
       - name: Set up Java and GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21' # 根据你的项目需求选择 Java 版本，GraalVM 建议使用 LTS 版本
-          distribution: 'graalvm-community'
+          java-version: '24' # 根据你的项目需求选择 Java 版本，GraalVM 建议使用 LTS 版本
+          distribution: 'graalvm'
           components: 'native-image' # 确保安装 Native Image 组件
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'gradle' # 缓存 Maven 依赖，加速构建
