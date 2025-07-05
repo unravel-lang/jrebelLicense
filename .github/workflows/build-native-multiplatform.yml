@@ -1,0 +1,109 @@
+name: Build GraalVM Native Image Multi-Platform
+
+on:
+  workflow_dispatch: # 允许手动触发工作流
+    inputs:
+      environment:
+        description: '部署环境'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  build-native-images:
+    # 使用 strategy.matrix 来定义不同的构建配置
+    strategy:
+      fail-fast: false # 即使一个平台构建失败，其他平台也会继续构建
+      matrix:
+        # 定义不同的操作系统和架构组合
+        os:
+          - ubuntu-24.04 # 适用于 Linux x86 和交叉编译 Linux ARM
+          - windows-latest # 适用于 Windows x86
+          - ubuntu-24.04-arm # 如果你想在原生 ARM 机器上构建 Linux ARM，可以取消注释
+        java-platform:
+          - arch: 'x64'
+            os-name: 'linux'
+          - arch: 'arm64'
+            os-name: 'linux'
+          - arch: 'x64'
+            os-name: 'windows'
+
+        # 根据 os-name 和 arch 动态选择 runs-on
+        include:
+          - os-name: 'linux'
+            arch: 'x64'
+            runs-on: 'ubuntu-24.04'
+            target-name: 'linux-x86'
+            executable-suffix: '' # Linux 可执行文件没有后缀
+          - os-name: 'linux'
+            arch: 'arm64'
+            runs-on: 'ubuntu-24.04' # 交叉编译 ARM64
+            target-name: 'linux-arm64'
+            executable-suffix: ''
+          - os-name: 'windows'
+            arch: 'x64'
+            runs-on: 'windows-latest'
+            target-name: 'windows-x86'
+            executable-suffix: '.exe' # Windows 可执行文件通常有 .exe 后缀
+
+    runs-on: ${{ matrix.runs-on }} # 根据矩阵动态选择运行器
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java and GraalVM for ${{ matrix.os-name }}-${{ matrix.arch }}
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '24' # 根据你的项目需求选择 Java 版本，GraalVM 建议使用 LTS 版本
+          distribution: 'graalvm'
+          components: 'native-image' # 确保安装 Native Image 组件
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: 'gradle' # 缓存 Maven/Gradle 依赖，加速构建
+          native-image-job-reports: 'true'
+          # 设置目标操作系统和架构，这对于交叉编译非常重要
+          # setup-graalvm action 会根据这些参数自动下载正确的 GraalVM 版本
+          # 对于 windows-latest, x64, 设置 target os 和 arch 是多余的，但为了通用性保留
+          target-os: ${{ matrix.os-name }}
+          target-arch: ${{ matrix.arch }}
+
+      - name: Verify GraalVM Native Image setup
+        run: |
+          native-image --version
+        shell: bash # 确保在 Windows 上也使用 bash shell 来运行此命令
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+        if: runner.os != 'Windows' # 仅在非 Windows 系统上执行
+
+      - name: Build Project with Gradle for ${{ matrix.target-name }}
+        run: |
+          # ./gradlew nativeBuild 命令会根据 GraalVM 的配置自动构建目标平台的原生镜像
+          ./gradlew nativeBuild
+        env:
+          # 以下环境变量通常由 graalvm/setup-graalvm@v1 自动处理，
+          # 仅在需要覆盖或调试时才需要手动设置
+          GRAALVM_HOME: ${{ env.JAVA_HOME }}
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+          # 如果需要特定的交叉编译工具链路径，可以在这里添加，但这通常由 setup-graalvm 处理
+          # PATH: "${{ env.GRAALVM_HOME }}/bin:${PATH}" # 确保工具链在PATH中
+        shell: bash # 在所有平台上使用 bash shell 运行 Gradle 命令，确保兼容性
+
+      - name: Verify Native Image Existence for ${{ matrix.target-name }}
+        run: |
+          # 根据不同平台调整可执行文件路径和名称
+          # 假设你的 Gradle 构建会将可执行文件放在 build/native/nativeCompile/ 目录下
+          # 并且文件名为你的项目名，例如 demo2
+          executable_path="build/native/nativeCompile/demo2${{ matrix.executable-suffix }}"
+          ls -l "$executable_path"
+          file "$executable_path"
+        shell: bash # 确保在 Windows 上也使用 bash shell 来运行此命令
+
+      - name: Upload Native Image Artifact for ${{ matrix.target-name }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target-name }}-native-image
+          path: build/native/nativeCompile/demo2${{ matrix.executable-suffix }}
