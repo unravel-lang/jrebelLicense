@@ -40,8 +40,8 @@ graalvmNative {
 //            jvmArgs.add("-Xmx4g")
 
             buildArgs.add('--enable-all-security-services')
-            buildArgs.add('-O3')
-//            buildArgs.add('-march=native')
+            buildArgs.add('-O2')
+            buildArgs.add('-march=compatibility')
 //            buildArgs.add('-H:ConfigurationFileDirectories=./target/native-config')
 //            buildArgs.add('-H:ReflectionConfigurationFiles=reflect-config.json')
 //            buildArgs.add('--emit build-report')
