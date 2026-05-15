@@ -15,7 +15,7 @@ on:
 jobs:
   build-native-images:
     strategy:
-      fail-fast: false # 即使一个平台构建失败，其他平台也会继续构建
+      fail-fast: true # 即使一个平台构建失败，其他平台也会继续构建
       matrix:
         # 定义每个构建任务的独立配置
         include:
@@ -54,7 +54,7 @@ jobs:
       - name: Set up Java and GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '24' # 你的 Java 版本
+          java-version: '25' # 你的 Java 版本
           distribution: 'graalvm'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
